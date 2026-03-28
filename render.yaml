@@ -3,10 +3,10 @@ services:
   # 1️ Redis як приватний сервіс
   - type: redis
     name: django-air-redis
-    runtime: docker
     plan: free
-
-  # 2️ Django Web Service
+    ipAllowList: []
+      
+      # 2️ Django Web Service
   - type: web
     name: django-air-web
     runtime: docker
