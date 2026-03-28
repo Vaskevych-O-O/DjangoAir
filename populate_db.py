@@ -36,20 +36,27 @@ def populate():
         )
         passengers.append(user)
 
-    user = AirlineUser.objects.create_user(
+    user, created = AirlineUser.objects.get_or_create(
         username='Supervisor',
-        password='secretpassword',
-        email='supervisor@example.com',
-        role=AirlineUser.Role.SUPERVISOR,
+        defaults={
+            "email": "supervisor@example.com",
+            "role": AirlineUser.Role.SUPERVISOR,
+        }
     )
 
+    if created:
+        user.set_password('secretpassword')
+        user.save()
+
     # Створюємо літак
-    airplane = Airplane.objects.create(
+    airplane, _ = Airplane.objects.get_or_create(
         name="Boeing 737",
-        seat_capacity=150,
-        economy_seats=120,
-        business_seats=20,
-        first_class_seats=10,
+        defaults={
+            "seat_capacity": 150,
+            "economy_seats": 120,
+            "business_seats": 20,
+            "first_class_seats": 10,
+        }
     )
 
     flights = []

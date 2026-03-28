@@ -6,7 +6,8 @@ echo "Running migrations and collecting static files..."
 # Міграції та збірка статичних файлів
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
-python manage.py populate_db
+
+
 
 # Запуск Celery, якщо увімкнено
 if [ "${USE_CELERY}" = "True" ]; then
