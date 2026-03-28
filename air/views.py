@@ -402,8 +402,8 @@ def create_checkout_session(request):
                 ]),
                 "services": json.dumps(compressed_services),
             },
-            success_url="https://localhost/bookings/",
-            cancel_url="https://localhost/",
+            success_url="https://django-air-web.onrender.com/bookings/",
+            cancel_url="https://django-air-web.onrender.com/",
         )
 
         return JsonResponse({
