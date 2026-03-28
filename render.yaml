@@ -1,58 +1,45 @@
 services:
-  # Основний веб-сервіс (Django/Daphne)
+  # 1. Redis як приватний сервіс (безкоштовно)
+  - type: pserv
+    name: django-air-redis
+    runtime: docker
+    image: redis:7
+    plan: free # Перевір доступність free для pserv у своєму регіоні, або використовуй standard
+    envVars:
+      - key: PORT
+        value: 6379
+
+  # 2. Django Web Service
   - type: web
     name: django-air-web
     runtime: docker
-    plan: free # Безкоштовно
+    plan: free
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: django-air-db
           property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: django-air-redis
-          property: connectionString
-      - key: POSTGRES_HOST
-        value: localhost # На Render ми використовуємо DATABASE_URL
-      - fromGroup: django-common-env # Спільні змінні (з .env)
+      - key: CELERY_BROKER_URL
+        value: redis://django-air-redis:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://django-air-redis:6379/0
+      # Додай сюди інші змінні з .env
 
-  # Celery Worker
+  # 3. Celery Worker
   - type: worker
     name: django-air-worker
     runtime: docker
     dockerCommand: celery -A air worker --loglevel=info --pool=solo
+    plan: free
     envVars:
-      - fromGroup: django-common-env
       - key: DATABASE_URL
         fromDatabase:
           name: django-air-db
           property: connectionString
+      - key: CELERY_BROKER_URL
+        value: redis://django-air-redis:6379/0
 
-  # Celery Beat
-  - type: worker
-    name: django-air-beat
-    runtime: docker
-    dockerCommand: celery -A air beat --loglevel=info
-    envVars:
-      - fromGroup: django-common-env
-
-# База даних
+# 4. База даних (це працює через blueprint)
 databases:
   - name: django-air-db
     plan: free
-
-# Редіс
-redis:
-  - name: django-air-redis
-    plan: free
-
-# Група спільних змінних (ваші секрети з .env)
-envVarGroups:
-  - name: django-common-env
-    envVars:
-      - key: STRIPE_API_KEY
-        value: sk_test_...
-      - key: DJANGO_SETTINGS_MODULE
-        value: DjangoAir.settings.production
