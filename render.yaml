@@ -1,3 +1,4 @@
+# render.yaml
 services:
   # 1️ Redis як приватний сервіс
   - type: redis
@@ -5,12 +6,7 @@ services:
     runtime: docker
     plan: free
 
-  # 2️ Postgres база даних (через blueprint Render)
-  databases:
-    - name: django-air-db
-      plan: free
-
-  # 3️ Django Web Service
+  # 2️ Django Web Service
   - type: web
     name: django-air-web
     runtime: docker
@@ -33,7 +29,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-  # 4️ Celery Worker
+  # 3️ Celery Worker
   - type: worker
     name: django-air-worker
     runtime: docker
@@ -57,7 +53,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-  # 5️ Celery Beat
+  # 4️ Celery Beat
   - type: worker
     name: django-air-beat
     runtime: docker
@@ -80,3 +76,7 @@ services:
         value: PLACEHOLDER_GOOGLE_CLIENT_ID
       - key: GOOGLE_CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
+
+databases:
+  - name: django-air-db
+    plan: free
