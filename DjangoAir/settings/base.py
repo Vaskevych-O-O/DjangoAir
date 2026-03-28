@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -141,4 +142,11 @@ STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET")
 STRIPE_API_KEY = env("STRIPE_API_KEY")
 
+USE_CELERY = env("USE_CELERY")
+
+if USE_CELERY:
+    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+
+SECRET_UPDATE_TOKEN =  env("SECRET_UPDATE_TOKEN")
 

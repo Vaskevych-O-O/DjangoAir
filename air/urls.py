@@ -26,4 +26,5 @@ urlpatterns = [
     path("auth/services/", include("allauth.urls")),
 
     path("health/", views.health_check, name="health_check"),
+    path("cron/update-flights/", views.secret_update_flights, name="secret_update_flights"),
 ]

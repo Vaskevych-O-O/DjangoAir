@@ -15,6 +15,8 @@ services:
         fromDatabase:
           name: django-air-db
           property: connectionString
+      - key: USE_CELERY
+        value: "False"
       - key: CELERY_BROKER_URL
         value: redis://django-air-redis:6379/0
       - key: CELERY_RESULT_BACKEND
@@ -23,58 +25,29 @@ services:
         value: PLACEHOLDER_DJANGO_SECRET_KEY
       - key: STRIPE_API_KEY
         value: PLACEHOLDER_STRIPE_KEY
-      - key: GOOGLE_CLIENT_ID
-        value: PLACEHOLDER_GOOGLE_CLIENT_ID
-      - key: GOOGLE_CLIENT_SECRET
-        value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
-
-  # Celery Worker
-  - type: worker
-    name: django-air-worker
-    runtime: docker
-    dockerCommand: celery -A air worker --loglevel=info --pool=solo
-    plan: free
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: django-air-db
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        value: redis://django-air-redis:6379/0
-      - key: CELERY_RESULT_BACKEND
-        value: redis://django-air-redis:6379/0
-      - key: DJANGO_SECRET_KEY
-        value: PLACEHOLDER_DJANGO_SECRET_KEY
-      - key: STRIPE_API_KEY
-        value: PLACEHOLDER_STRIPE_KEY
-      - key: GOOGLE_CLIENT_ID
-        value: PLACEHOLDER_GOOGLE_CLIENT_ID
-      - key: GOOGLE_CLIENT_SECRET
-        value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
-
-  # Celery Beat
-  - type: worker
-    name: django-air-beat
-    runtime: docker
-    dockerCommand: celery -A air beat --loglevel=info
-    plan: free
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: django-air-db
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        value: redis://django-air-redis:6379/0
-      - key: CELERY_RESULT_BACKEND
-        value: redis://django-air-redis:6379/0
-      - key: DJANGO_SECRET_KEY
-        value: PLACEHOLDER_DJANGO_SECRET_KEY
-      - key: STRIPE_API_KEY
-        value: PLACEHOLDER_STRIPE_KEY
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: PLACEHOLDER_STRIPE_PUBLISHABLE_KEY
+      - key: STRIPE_SECRET_KEY
+        value: PLACEHOLDER_STRIPE_SECRET_KEY
+      - key: STRIPE_WEBHOOK_SECRET
+        value: PLACEHOLDER_STRIPE_WEBHOOK_SECRET
       - key: CLIENT_ID
         value: PLACEHOLDER_GOOGLE_CLIENT_ID
       - key: CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
+      - key: EMAIL_HOST_USER
+        value: PLACEHOLDER_EMAIL
+      - key: EMAIL_HOST_PASSWORD
+        value: PLACEHOLDER_PASSWORD
+      - key: ALLOWED_HOSTS
+        value: django-air-web.onrender.com
+      - key: DEBUG
+        value: "False"
+      - key: DJANGO_ENV
+        value: DjangoAir.settings.prod
+      - key: REDIS_URL
+        value: redis://django-air-redis:6379
+
 
 databases:
   - name: django-air-db

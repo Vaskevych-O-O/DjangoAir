@@ -1,6 +1,7 @@
 import json
 import random
 import string
+import hashlib
 from collections import defaultdict
 
 import stripe
@@ -14,12 +15,24 @@ from django.forms.utils import ErrorDict
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_GET
 
+from .tasks import update_flight_status
 from .forms import LoginForm, RegisterForm
 from .models import Flight, Ticket, TicketStatusChoices, Seats, Meal, Baggage, Comfort
 from .utils import generate_booking_reference
 
 stripe.api_key = settings.STRIPE_API_KEY
+
+
+@require_GET
+def secret_update_flights(request):
+    token = request.GET.get('token')
+    if not token or token != settings.SECRET_UPDATE_TOKEN:
+        return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    result = update_flight_status()
+    return JsonResponse({"status": "success", "result": result})
 
 
 # Formats Django form or serializer errors into a plain dictionary
