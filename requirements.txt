@@ -22,3 +22,4 @@ asgiref~=3.8.1
 daphne
 django-model-utils
 channels_redis
+dj_database_url
