@@ -1,15 +1,16 @@
 services:
-  # 1. Redis як приватний сервіс (безкоштовно)
-  - type: pserv
+  # 1️ Redis як приватний сервіс
+  - type: redis
     name: django-air-redis
     runtime: docker
-    image: redis:7
-    plan: free # Перевір доступність free для pserv у своєму регіоні, або використовуй standard
-    envVars:
-      - key: PORT
-        value: 6379
+    plan: free
 
-  # 2. Django Web Service
+  # 2️ Postgres база даних (через blueprint Render)
+  databases:
+    - name: django-air-db
+      plan: free
+
+  # 3️ Django Web Service
   - type: web
     name: django-air-web
     runtime: docker
@@ -23,9 +24,16 @@ services:
         value: redis://django-air-redis:6379/0
       - key: CELERY_RESULT_BACKEND
         value: redis://django-air-redis:6379/0
-      # Додай сюди інші змінні з .env
+      - key: DJANGO_SECRET_KEY
+        value: PLACEHOLDER_DJANGO_SECRET_KEY
+      - key: STRIPE_API_KEY
+        value: PLACEHOLDER_STRIPE_KEY
+      - key: GOOGLE_CLIENT_ID
+        value: PLACEHOLDER_GOOGLE_CLIENT_ID
+      - key: GOOGLE_CLIENT_SECRET
+        value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-  # 3. Celery Worker
+  # 4️ Celery Worker
   - type: worker
     name: django-air-worker
     runtime: docker
@@ -38,8 +46,37 @@ services:
           property: connectionString
       - key: CELERY_BROKER_URL
         value: redis://django-air-redis:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://django-air-redis:6379/0
+      - key: DJANGO_SECRET_KEY
+        value: PLACEHOLDER_DJANGO_SECRET_KEY
+      - key: STRIPE_API_KEY
+        value: PLACEHOLDER_STRIPE_KEY
+      - key: GOOGLE_CLIENT_ID
+        value: PLACEHOLDER_GOOGLE_CLIENT_ID
+      - key: GOOGLE_CLIENT_SECRET
+        value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-# 4. База даних (це працює через blueprint)
-databases:
-  - name: django-air-db
+  # 5️ Celery Beat
+  - type: worker
+    name: django-air-beat
+    runtime: docker
+    dockerCommand: celery -A air beat --loglevel=info
     plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: django-air-db
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        value: redis://django-air-redis:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://django-air-redis:6379/0
+      - key: DJANGO_SECRET_KEY
+        value: PLACEHOLDER_DJANGO_SECRET_KEY
+      - key: STRIPE_API_KEY
+        value: PLACEHOLDER_STRIPE_KEY
+      - key: GOOGLE_CLIENT_ID
+        value: PLACEHOLDER_GOOGLE_CLIENT_ID
+      - key: GOOGLE_CLIENT_SECRET
+        value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
