@@ -1,0 +1,58 @@
+services:
+  # Основний веб-сервіс (Django/Daphne)
+  - type: web
+    name: django-air-web
+    runtime: docker
+    plan: free # Безкоштовно
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: django-air-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: django-air-redis
+          property: connectionString
+      - key: POSTGRES_HOST
+        value: localhost # На Render ми використовуємо DATABASE_URL
+      - fromGroup: django-common-env # Спільні змінні (з .env)
+
+  # Celery Worker
+  - type: worker
+    name: django-air-worker
+    runtime: docker
+    dockerCommand: celery -A air worker --loglevel=info --pool=solo
+    envVars:
+      - fromGroup: django-common-env
+      - key: DATABASE_URL
+        fromDatabase:
+          name: django-air-db
+          property: connectionString
+
+  # Celery Beat
+  - type: worker
+    name: django-air-beat
+    runtime: docker
+    dockerCommand: celery -A air beat --loglevel=info
+    envVars:
+      - fromGroup: django-common-env
+
+# База даних
+databases:
+  - name: django-air-db
+    plan: free
+
+# Редіс
+redis:
+  - name: django-air-redis
+    plan: free
+
+# Група спільних змінних (ваші секрети з .env)
+envVarGroups:
+  - name: django-common-env
+    envVars:
+      - key: STRIPE_API_KEY
+        value: sk_test_...
+      - key: DJANGO_SETTINGS_MODULE
+        value: DjangoAir.settings.production
