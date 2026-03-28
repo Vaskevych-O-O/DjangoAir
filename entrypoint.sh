@@ -7,4 +7,10 @@ echo "Running migrations and collecting static files..."
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
-exec "$@"
+# Запускаємо сервер, якщо команда передана, або залишаємо контейнер живим
+if [ "$#" -eq 0 ]; then
+    echo "No command provided, starting Daphne server..."
+    daphne -b 0.0.0.0 -p 8000 DjangoAir.asgi:application
+else
+    exec "$@"
+fi
