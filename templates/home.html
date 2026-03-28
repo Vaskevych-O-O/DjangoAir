@@ -17,7 +17,7 @@
         window.UNIQUE_CITIES_FROM_SERVER = {{ unique_cities|safe }};
         window.FLIGHT_DATES_FROM_SERVER = {{ flight_dates|safe }};
         window.oauthUrls = {
-            google: "{% provider_login_url 'google' %}",
+            google: "{% provider_login_url 'google' process='login' %}",
         };
         window.csrfToken = '{{ csrf_token }}';
     </script>
