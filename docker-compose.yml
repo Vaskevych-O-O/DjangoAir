@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     networks:
       - backend
 
@@ -22,7 +22,7 @@ services:
 
   stripe-listen:
     image: stripe/stripe-cli
-    command: listen --forward-to http://nginx/api/succeed_payment/ --skip-verify
+    command: listen --forward-to http://web:8000/api/succeed_payment/ --skip-verify
     depends_on:
       - web
       - nginx

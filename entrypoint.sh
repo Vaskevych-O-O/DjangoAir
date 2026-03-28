@@ -1,11 +1,30 @@
 #!/bin/sh
+set -e
 
-echo "📦 Збираємо статику..."
+echo "Waiting for Postgres..."
+
+python << END
+import time
+import psycopg2
+import os
+
+while True:
+    try:
+        psycopg2.connect(
+            dbname="DjangoAir",
+            user="postgres",
+            password="mysecretpassword",
+            host=os.environ.get("POSTGRES_HOST", "db"),
+            port=5432,
+        )
+        break
+    except psycopg2.OperationalError:
+        time.sleep(1)
+END
+
+echo "Postgres started"
+
+python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
-echo "🛠 Обробка міграцій..."
-python manage.py migrate
-
-echo "🚀 Запускаємо Daphne..."
-daphne -b 0.0.0.0 -p 8000 DjangoAir.asgi:application
-
+exec "$@"

@@ -389,8 +389,8 @@ def create_checkout_session(request):
                 ]),
                 "services": json.dumps(compressed_services),
             },
-            success_url="https://djangoair-production.up.railway.app/bookings/",
-            cancel_url="hhttps://djangoair-production.up.railway.app/",
+            success_url="https://localhost/bookings/",
+            cancel_url="https://localhost/",
         )
 
         return JsonResponse({
