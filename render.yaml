@@ -71,9 +71,9 @@ services:
         value: PLACEHOLDER_DJANGO_SECRET_KEY
       - key: STRIPE_API_KEY
         value: PLACEHOLDER_STRIPE_KEY
-      - key: GOOGLE_CLIENT_ID
+      - key: CLIENT_ID
         value: PLACEHOLDER_GOOGLE_CLIENT_ID
-      - key: GOOGLE_CLIENT_SECRET
+      - key: CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
 databases:
