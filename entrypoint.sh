@@ -1,29 +1,9 @@
 #!/bin/sh
 set -e
 
-echo "Waiting for Postgres..."
+echo "Running migrations and collecting static files..."
 
-python << END
-import time
-import psycopg2
-import os
-
-while True:
-    try:
-        psycopg2.connect(
-            dbname="DjangoAir",
-            user="postgres",
-            password="mysecretpassword",
-            host=os.environ.get("POSTGRES_HOST", "db"),
-            port=5432,
-        )
-        break
-    except psycopg2.OperationalError:
-        time.sleep(1)
-END
-
-echo "Postgres started"
-
+# Використовуємо DATABASE_URL, Render вже забезпечує доступність БД
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 

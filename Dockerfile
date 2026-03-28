@@ -1,8 +1,9 @@
 # =============== СТАДІЯ 1: BUILD ===================
 FROM python:3.11-slim AS build
 
+# Системні пакети
 RUN apt-get update && apt-get install -y \
-    curl gnupg build-essential libpq-dev \
+    curl build-essential libpq-dev \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
@@ -22,7 +23,6 @@ COPY . .
 # Збірка Vue фронтенду
 RUN npm run build
 
-
 # =============== СТАДІЯ 2: ПРОД ===================
 FROM python:3.11-slim
 
@@ -32,7 +32,7 @@ ENV DJANGO_SETTINGS_MODULE=DjangoAir.settings.prod
 
 WORKDIR /app
 
-# Системні залежності (для psycopg2 та інших)
+# Системні залежності
 RUN apt-get update && apt-get install -y libpq-dev
 
 # Встановлюємо Python-залежності
@@ -46,8 +46,6 @@ COPY --from=build /app /app
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Проброс порту
 EXPOSE 8000
 
-# Запуск
 ENTRYPOINT ["/app/entrypoint.sh"]

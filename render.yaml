@@ -1,12 +1,11 @@
-# render.yaml
 services:
-  # 1️ Redis як приватний сервіс
+  # Redis
   - type: redis
     name: django-air-redis
     plan: free
     ipAllowList: []
-      
-      # 2️ Django Web Service
+
+  # Django Web
   - type: web
     name: django-air-web
     runtime: docker
@@ -29,7 +28,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-  # 3️ Celery Worker
+  # Celery Worker
   - type: worker
     name: django-air-worker
     runtime: docker
@@ -53,7 +52,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         value: PLACEHOLDER_GOOGLE_CLIENT_SECRET
 
-  # 4️ Celery Beat
+  # Celery Beat
   - type: worker
     name: django-air-beat
     runtime: docker
